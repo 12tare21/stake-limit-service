@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Infrastructure\Repositories\Eloquent\MutableRepository;
+use App\Infrastructure\Repositories\Interfaces\IRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(IRepository::class, MutableRepository::class);
     }
 
     /**
