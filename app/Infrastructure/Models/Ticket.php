@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Models;
 
 use App\Infrastructure\traits\Uuid4;
-use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
