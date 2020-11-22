@@ -29,8 +29,8 @@ class Device extends Model
     } 
 
     public function stakeSum(){
-        return array_sum($this->tickets()->map(function($ticket){
+        return array_sum($this->tickets->sum(function($ticket){
             return $ticket->stake;
-        })->toArray());
+        }));
     }
 }
