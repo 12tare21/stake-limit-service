@@ -8,4 +8,5 @@ interface IRepository{
     function findByAttribute($attr, $value);
     function store(array $data);
     function update($id, array $data);
+    function delete($id);
 }
