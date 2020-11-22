@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => 'ticket'], function (){
-    Route::get('/', 'TicketMessageController@hello');
+Route::group(['prefix' => 'stakes'], function (){
+    Route::post('/tickets', 'StakesController@recieveTicketMessage');
+    Route::post('/limits', 'StakesController@configureStakeLimit');
 });
