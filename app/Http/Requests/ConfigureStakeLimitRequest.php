@@ -25,10 +25,11 @@ class ConfigureStakeLimitRequest extends FormRequest
     {
         return [
             'id' => ['required', 'uuid'],
-            'timeDuration' => ['required', 'numeric', 'min:300', "max:86400"],
+            'deviceId' => ['required', 'uuid'],
+            'timeDuration' => ['required', 'integer', 'min:300', "max:86400"],
             'stakeLimit ' => ['required', 'numeric', 'min:1', 'max:10000000'],
             'hotPercentage' => ['required', 'integer', 'min:1', 'max:100'],
-            'restrictionExpires' => ['required', 'numeric', 'min:0', 'not_between:0,60'],
+            'restrictionExpires' => ['required', 'integer', 'min:0', 'not_between:0,60'],
         ];
     }
 
@@ -36,14 +37,19 @@ class ConfigureStakeLimitRequest extends FormRequest
     {
         return [
             'id.required' => trans('validation.required', ['attribute' => trans('stakes.id')]),
+            'deviceId.required' => trans('validation.required', ['attribute' => trans('stakes.deviceId')]),
             'timeDuration.required' => trans('validation.required', ['attribute' => trans('stakes.timeDuration')]),
             'stakeLimit.required' => trans('validation.required', ['attribute' => trans('stakes.stakeLimit')]),
             'hotPercentage.required' => trans('validation.required', ['attribute' => trans('stakes.hotPercentage')]),
             'restrictionExpires.required' => trans('validation.required', ['attribute' => trans('stakes.restrictionExpires')]),
             
-            'timeDuration.numeric' => trans('validation.numeric', ['attribute' => trans('stakes.timeDuration')]),
+            'id.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.id')]),
+            'deviceId.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.deviceId')]),
+
             'stakeLimit.numeric' => trans('validation.numeric', ['attribute' => trans('stakes.stakeLimit')]),
-            'restrictionExpires.numeric' => trans('validation.numeric', ['attribute' => trans('stakes.restrictionExpires')]),
+            'timeDuration.integer' => trans('validation.integer', ['attribute' => trans('stakes.timeDuration')]),
+            'hotPercentage.integer' => trans('validation.integer', ['attribute' => trans('stakes.hotPercentage')]),
+            'restrictionExpires.integer' => trans('validation.integer', ['attribute' => trans('stakes.restrictionExpires')]),
 
             'timeDuration.min' => trans('validation.min', ['attribute' => trans('stakes.timeDuration')]),
             'stakeLimit.min' => trans('validation.min', ['attribute' => trans('stakes.stakeLimit')]),
@@ -54,7 +60,6 @@ class ConfigureStakeLimitRequest extends FormRequest
             'stakeLimit.max' => trans('validation.max', ['attribute' => trans('stakes.stakeLimit')]),
             'hotPercentage.max' => trans('validation.max', ['attribute' => trans('stakes.hotPercentage')]),
             
-            'hotPercentage.integer' => trans('validation.integer', ['attribute' => trans('stakes.hotPercentage')]),
             'restrictionExpires.not_between' => trans('validation.not_between', ['attribute' => trans('stakes.restrictionExpires')]),
         ];
     }

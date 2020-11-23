@@ -17,10 +17,12 @@ class CreateStakeLimitsTable extends Migration
             $table->uuid('id')->primary();
             $table->uuid('deviceId');
             $table->foreign('deviceId')->references('id')->on('devices');
-            $table->timestamp('validFrom');
+            $table->unsignedInteger('expiresFor');
+            $table->decimal('blockValue', 8, 2);
+            $table->decimal('hotValue', 8, 2);
+            $table->timestamp('validFrom')->default(\Carbon\Carbon::now());
             $table->timestamp('validTo');
-            $table->decimal('stakeLimit', 8, 2);
-            $table->unsignedInteger('hotPercentage');
+            $table->timestamp('expiresAt')->nullable();
             $table->timestamps();
         });
     }

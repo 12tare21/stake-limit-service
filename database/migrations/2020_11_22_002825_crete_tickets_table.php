@@ -18,6 +18,7 @@ class CreteTicketsTable extends Migration
             $table->foreign('deviceId')->references('id')->on('devices');
             $table->uuid('deviceId');
             $table->decimal('stake', 8, 2);
+            $table->timestamps();
         });
     }
 

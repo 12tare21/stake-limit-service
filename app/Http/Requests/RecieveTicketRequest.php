@@ -34,11 +34,13 @@ class RecieveTicketRequest extends FormRequest
     {
         return [
             'id.required' => trans('validation.required', ['attribute' => trans('stakes.id')]),
-            'id.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.id')]),
             'deviceId.required' => trans('validation.required', ['attribute' => trans('stakes.deviceId')]),
-            'deviceId.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.deviceId')]),
             'stake.required' => trans('validation.required', ['attribute' => trans('stakes.stake')]),
-            'stake.numeric' => trans('validation.numeric', ['attribute' => trans('stakes.stake')])
+            
+            'id.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.id')]),
+            'deviceId.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.deviceId')]),
+
+            'stake.numeric' => trans('validation.numeric', ['attribute' => trans('stakes.stake')]),
         ];
     }
 }
