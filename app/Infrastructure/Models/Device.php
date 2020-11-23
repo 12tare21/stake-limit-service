@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Models;
 
+use App\Infrastructure\Enums\DeviceStatus;
 use App\Infrastructure\traits\Uuid4;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +14,12 @@ class Device extends Model
     protected $table = 'devices';
 
     protected $fillable = [
-        'id'
+        'id',
     ];
 
     protected $appends = [
-        'stakeSum'
+        'stakeSum',
+        'status'
     ];
 
     public function stakeLimits(){
@@ -32,5 +34,20 @@ class Device extends Model
         return $this->tickets->sum(function($ticket){
             return $ticket->stake;
         });
+    }
+
+    public function status(){
+        $status = DeviceStatus::OK;
+        $stakeSum = $this->stakeSum(); 
+        $this->stakeLimits->each(function ($limit) use ($status, $stakeSum){
+            if($limit->expired()){
+                if ($stakeSum > $limit->blockValue){
+                    $status = DeviceStatus::BLOCKED;
+                } else if ($stakeSum > $limit->hotValue){
+                    $status = DeviceStatus::HOT;
+                }
+            }
+        });
+        return $status;
     }
 }

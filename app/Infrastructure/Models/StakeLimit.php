@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Models;
 
 use App\Infrastructure\traits\Uuid4;
-use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class StakeLimit extends Model
@@ -17,11 +16,21 @@ class StakeLimit extends Model
         'deviceId',
         'validFrom',
         'validTo',
-        'stakeLimit',
-        'hotPercentage',
+        'blockValue',
+        'hotValue',
+        'expiresFor',
+        'expiresAt',
     ];
 
     public function device(){
         return $this->belongsTo(Device::class);
+    }
+
+    public function expired(){
+        return $this->expiresAt && \Carbon\Carbon::now()->greaterThan($this->expiresAt);
+    }
+
+    public function stillValid(){
+        return \Carbon\Carbon::now()->lessThanOrEqualTo($this->validTo);
     }
 }

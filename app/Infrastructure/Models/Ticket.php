@@ -10,8 +10,7 @@ class Ticket extends Model
     use Uuid4;
 
     protected $table = 'tickets';
-    protected $keyType = 'string';
-    
+
     protected $fillable = [
         'stake',
         'deviceId',
