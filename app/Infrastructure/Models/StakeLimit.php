@@ -22,6 +22,12 @@ class StakeLimit extends Model
         'expiresAt',
     ];
 
+    protected $casts = [
+        'expiresAt' => 'datetime:Y-m-d H:i:s',
+        'validFrom' => 'datetime:Y-m-d H:i:s',
+        'validTo' => 'datetime:Y-m-d H:i:s'
+    ];
+
     public function device(){
         return $this->belongsTo(Device::class);
     }

@@ -3,26 +3,37 @@
 namespace App\Infrastructure\Repositories\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Infrastructure\Repositories\Interfaces\IRepository;
+use App\Infrastructure\Repositories\Interfaces\Repository;
 
-class MutableRepository extends ReadRepository implements IRepository{
+class MutableRepository extends ReadRepository implements Repository{
+    protected $model;
+
     public function __construct(Model $model)
     {
-        parent::__construct($model);
+        $this->model = $model;
     }
 
-    public function store(array $data)
-    {//na device biljezit zbir stakeova,mozda stake i ne kreirati
-        return $this->_model->store($data);
+    public function create(array $data)
+    {
+        return $this->model->create($data);
     }
 
     public function update($id, array $data)
     {
-        return $this->_model->where($id)->update($data);
+        return $this->model->where($this->model->getKeyName(), $id)->update($data);
     }
 
     public function delete($id)
     {
-        return $this->_model->delete($id);
+        return $this->model->delete($id);
+    }
+
+    public function findOrCreate($id, array $data = [])
+    {
+        try{
+            return $this->model->findOrFail($id);
+        } catch (\Exception $e) {
+            return $this->model->create($data);
+        }
     }
 }

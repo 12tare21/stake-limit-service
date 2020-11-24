@@ -2,16 +2,15 @@
 
 namespace App\Infrastructure\Models;
 
+use App\Events\DeviceBlockedEvent;
 use App\Infrastructure\Enums\DeviceStatus;
-use App\Infrastructure\traits\Uuid4;
-use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
 {
-    use Uuid4;
-
     protected $table = 'devices';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -23,31 +22,37 @@ class Device extends Model
     ];
 
     public function stakeLimits(){
-        return $this->hasMany(StakeLimit::class);
+        return $this->hasMany(StakeLimit::class, 'deviceId', 'id');
     } 
 
     public function tickets(){
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Ticket::class, 'deviceId', 'id');
     } 
 
-    public function stakeSum(){
-        return $this->tickets->sum(function($ticket){
-            return $ticket->stake;
-        });
+    public function getStakeSumAttribute(){
+        return $this->stakesSum();
     }
 
-    public function status(){
+    public function getStatusAttribute(){
         $status = DeviceStatus::OK;
-        $stakeSum = $this->stakeSum(); 
-        $this->stakeLimits->each(function ($limit) use ($status, $stakeSum){
-            if($limit->expired()){
+        $stakeSum = $this->stakesSum();
+        $this->stakeLimits->each(function ($limit) use (&$status, $stakeSum){
+            if($limit->stillValid() && !$limit->expired()){
                 if ($stakeSum > $limit->blockValue){
                     $status = DeviceStatus::BLOCKED;
+                    event(new DeviceBlockedEvent($this->id));
+                    return true;
                 } else if ($stakeSum > $limit->hotValue){
                     $status = DeviceStatus::HOT;
                 }
             }
         });
         return $status;
+    }
+
+    private function stakesSum(){
+        return $this->tickets->sum(function($ticket){
+            return $ticket->stake;
+        });
     }
 }

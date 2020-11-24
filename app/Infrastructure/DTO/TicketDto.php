@@ -10,12 +10,12 @@ class TicketDto implements Dto{
     private $stake;
 
     public function setId(string $id): TicketDto{
-        $this->id = Uuid::fromString($id);
+        $this->id = $id;
         return $this;
     }
 
     public function setDeviceId(string $deviceId): TicketDto{
-        $this->deviceId = Uuid::fromString($deviceId);
+        $this->deviceId = $deviceId;
         return $this;
     }
 

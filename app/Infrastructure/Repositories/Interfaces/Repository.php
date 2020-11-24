@@ -2,11 +2,12 @@
 
 namespace App\Infrastructure\Repositories\Interfaces;
 
-interface IRepository{
+interface Repository{
     function all();
-    function findById($id);
+    function find($id);
     function findByAttribute($attr, $value);
-    function store(array $data);
+    function create(array $data);
     function update($id, array $data);
     function delete($id);
+    function findOrCreate($id, array $data = []);
 }
