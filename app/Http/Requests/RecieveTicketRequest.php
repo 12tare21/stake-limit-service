@@ -24,7 +24,7 @@ class RecieveTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['required', 'uuid'],
+            // 'id' => ['required', 'uuid'],
             'deviceId' => ['required', 'uuid'],
             'stake' => ['required', 'numeric'],
         ];

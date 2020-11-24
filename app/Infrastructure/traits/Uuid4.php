@@ -11,9 +11,7 @@ trait Uuid4{
         parent::boot();
 
         static::creating(function (Model $model) {
-            if(!$model->getAttribute($model->getKeyName())){
-                $model->setAttribute($model->getKeyName(), Uuid::uuid4());
-            }
+            $model->setAttribute($model->getKeyName(), Uuid::uuid4());
             $model->setKeyType('string');
             $model->setIncrementing(false);
         });

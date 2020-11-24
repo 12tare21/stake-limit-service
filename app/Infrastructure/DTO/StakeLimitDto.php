@@ -9,7 +9,7 @@ class StakeLimitDto implements Dto{
     private $validTo;
     private $blockValue;
     private $hotValue;
-    private $expiresAt;
+    private $expiresFor;
 
     public function setId(string $id): StakeLimitDto{
         $this->id = $id;
@@ -42,7 +42,7 @@ class StakeLimitDto implements Dto{
     }
 
     public function setExpiresForInSeconds(int $duration): StakeLimitDto{
-        $this->validTo = \Carbon\Carbon::now()->addSeconds($duration);
+        $this->expiresFor = $duration;
         return $this;
     }
 
@@ -65,26 +65,11 @@ class StakeLimitDto implements Dto{
         return [
             'id' => $this->id,
             'deviceId' => $this->deviceId,
-            'validTo' => $this->validTo,
-            'blockValue' => $this->blockValue,
-            'hotValue' => $this->hotValue,
-        ];
-    }
-
-    public function toArrayWithValidFrom(){
-        return [
-            'id' => $this->id,
-            'deviceId' => $this->deviceId,
             'validFrom' => $this->validFrom,
             'validTo' => $this->validTo,
             'blockValue' => $this->blockValue,
             'hotValue' => $this->hotValue,
-        ];
-    }
-
-    public function toUpdatedArray(){
-        return [
-            'expiresAt' => $this->expiresAt
+            'expiresFor' => $this->expiresFor,
         ];
     }
 }
