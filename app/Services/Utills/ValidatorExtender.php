@@ -10,7 +10,7 @@ class ValidatorExtender{
         self::notBetween();
     }
     
-    private static function notBetween()
+    public static function notBetween()
     {
         Validator::extend('not_between', function ($attribute, $value, $parameters)
         {
