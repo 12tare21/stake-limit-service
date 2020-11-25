@@ -15,8 +15,7 @@ class CreteTicketsTable extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('deviceId');
-            $table->foreign('deviceId')->references('id')->on('devices');
+            $table->uuid('deviceId')->index();
             $table->decimal('stake', 8, 2);
             $table->timestamps();
         });

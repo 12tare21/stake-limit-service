@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'stakes'], function (){
     Route::post('/tickets', 'StakesController@recieveTicketMessage');
-    Route::post('/limits', 'StakesController@configureStakeLimit');
+    Route::put('/config', 'StakesController@configureStakeLimit');
 });

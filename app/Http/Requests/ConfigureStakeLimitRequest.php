@@ -24,7 +24,6 @@ class ConfigureStakeLimitRequest extends FormRequest
     public function rules()
     {
         return [
-            'deviceId' => ['required', 'uuid'],
             'timeDuration' => ['required', 'integer', 'min:300', "max:86400"],
             'stakeLimit' => ['required', 'numeric', 'min:1', 'max:10000000'],
             'hotPercentage' => ['required', 'integer', 'min:1', 'max:100'],
@@ -35,14 +34,11 @@ class ConfigureStakeLimitRequest extends FormRequest
     public function messages()
     {
         return [
-            'deviceId.required' => trans('validation.required', ['attribute' => trans('stakes.deviceId')]),
             'timeDuration.required' => trans('validation.required', ['attribute' => trans('stakes.timeDuration')]),
             'stakeLimit.required' => trans('validation.required', ['attribute' => trans('stakes.stakeLimit')]),
             'hotPercentage.required' => trans('validation.required', ['attribute' => trans('stakes.hotPercentage')]),
             'restrictionExpires.required' => trans('validation.required', ['attribute' => trans('stakes.restrictionExpires')]),
             
-            'deviceId.uuid' => trans('validation.uuid', ['attribute' => trans('stakes.deviceId')]),
-
             'stakeLimit.numeric' => trans('validation.numeric', ['attribute' => trans('stakes.stakeLimit')]),
             'timeDuration.integer' => trans('validation.integer', ['attribute' => trans('stakes.timeDuration')]),
             'hotPercentage.integer' => trans('validation.integer', ['attribute' => trans('stakes.hotPercentage')]),

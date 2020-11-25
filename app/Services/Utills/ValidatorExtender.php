@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Validators;
+namespace App\Services\Utills;
 
 use Illuminate\Support\Facades\Validator;
 
@@ -14,7 +14,7 @@ class ValidatorExtender{
     {
         Validator::extend('not_between', function ($attribute, $value, $parameters)
         {
-            if($value > doubleval($parameters[0]) && $value < doubleval($parameters[1])){
+            if($value > intval($parameters[0]) && $value < intval($parameters[1])){
                 return false;
             }
             

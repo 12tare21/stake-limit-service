@@ -15,8 +15,4 @@ class Ticket extends Model
         'deviceId',
         'id'
     ];    
-
-    public function device(){
-        return $this->belongsTo(Device::class);
-    }  
 }
