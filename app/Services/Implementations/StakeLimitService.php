@@ -60,37 +60,25 @@ class StakeLimitService implements IStakeLimitService{
     private function resolveDeviceStatus($stakeSum, $deviceId){
         $now = \Carbon\Carbon::now();
         $stakeLimit = $this->config->all();
-        $status = DeviceStatus::OK;
+        $device = isset($stakeLimit[$deviceId]) ? $stakeLimit[$deviceId] : null;
         
-        //DODATI PODRSKU DA MOZEMO VISE STAKE LIMITA ZADAT PO DEVICEU
-        //put seconds in validation.php
-        //naming convenction kod stake.limit jsona u folder,a config da se zove fajl, a history napravit i da ide laga
-        
+        if(is_null($stakeLimit) || $now->getTimestamp() > strtotime($stakeLimit['validTo']))
+            return DeviceStatus::OK;
+
         if(
-            $now->lessThan($stakeLimit['validTo'])
-            && (
-                isset($stakeLimit[$deviceId]) 
-                && isset($stakeLimit[$deviceId]) 
-                && $now->lessThan($stakeLimit[$deviceId])
-            )
-            || !isset($stakeLimit[$deviceId])
+            (!$device || $now->getTimestamp() < strtotime($device) || $stakeLimit['expiresFor'] === 0) 
+            && $stakeSum > $stakeLimit['blockValue']
         ){
-            if(
-                $stakeSum > $stakeLimit['blockValue']
-                && !isset($stakeLimit[$deviceId])
-                || $stakeLimit['expiresFor'] == 0){
-                if(!isset($stakeLimit[$deviceId])){
-                    $this->config->put([
-                        $deviceId => \Carbon\Carbon::now()->addSeconds($stakeLimit['expiresFor'])
-                    ]);
-                }
-                // $this->config->put(['expiresAt' => \Carbon\Carbon::now()->addSeconds($stakeLimit['expiresFor'])]);
-                $status = DeviceStatus::BLOCKED;
-            } else if($stakeSum > $stakeLimit['hotValue']){
-                $status = DeviceStatus::HOT;
+            if(!$device){
+                $this->config->put([
+                    $deviceId => $now->addSeconds($stakeLimit['expiresFor'])
+                ]);
             }
+            return DeviceStatus::BLOCKED;
+        } else if ($stakeSum > $stakeLimit['hotValue']){
+            return DeviceStatus::HOT;
         }
-        
-        return $status;
+
+        return DeviceStatus::OK;
     }
 }
