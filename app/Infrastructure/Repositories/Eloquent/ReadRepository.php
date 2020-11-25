@@ -2,7 +2,16 @@
 
 namespace App\Infrastructure\Repositories\Eloquent;
 
+use Illuminate\Database\Eloquent\Model;
+
 class ReadRepository{
+    protected $model;
+
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
     public function all()
     {
         return $this->model->all();
@@ -16,5 +25,10 @@ class ReadRepository{
     public function findByAttribute($attr, $value)
     {
         return $this->model->where($attr, $value)->get();
+    }
+
+    public function sumByAttribute($propName, $attr, $value)
+    {
+        return $this->model->where($attr, $value)->sum($propName);
     }
 }

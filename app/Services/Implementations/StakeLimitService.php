@@ -22,17 +22,12 @@ class StakeLimitService implements IStakeLimitService{
 
     public function recieveTicketMessage(RecieveTicketRequest $request){
         $requestData = $request->validated();
-        $stakeSum = $this->tickets
-            ->findByAttribute('deviceId', $requestData['deviceId'])
-            ->sum(function($ticket){
-                return $ticket->stake;
-            });
-
+        $stakeSum = $this->tickets->sumByAttribute('stake', 'deviceId', $requestData['deviceId']);
         $status = $this->resolveDeviceStatus($stakeSum, $requestData['deviceId']);
+        
         if($status !== DeviceStatus::BLOCKED){
             $ticketDto = new TicketDto();
-            $ticketDto
-                ->setId($requestData['id'])
+            $ticketDto->setId($requestData['id'])
                 ->setDeviceId($requestData['deviceId'])
                 ->setStake($requestData['stake']);
 

@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use App\Infrastructure\Repositories\Interfaces\Repository;
 
 class MutableRepository extends ReadRepository implements Repository{
-    protected $model;
 
     public function __construct(Model $model)
     {
-        $this->model = $model;
+        parent::__construct($model);
     }
 
     public function create(array $data)
