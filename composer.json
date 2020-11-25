@@ -10,7 +10,7 @@
     "require": {
         "php": "^7.2.5|^8.0",
         "bensampo/laravel-enum": "^2.2",
-        "dyrynda/laravel-model-uuid": "^6.2",
+        "darkaonline/l5-swagger": "^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",

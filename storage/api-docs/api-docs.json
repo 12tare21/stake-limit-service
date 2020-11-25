@@ -1,0 +1,112 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Stake limit service",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/stakes/tickets": {
+            "post": {
+                "tags": [
+                    "Ticket message"
+                ],
+                "summary": "Create ticket and resolve device status",
+                "operationId": "App\\Http\\Controllers\\StakesController::recieveTicketMessage",
+                "requestBody": {
+                    "description": "Request object to resolve ticket message",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "deviceId",
+                                    "stake"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "ID of ticket message",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "deviceId": {
+                                        "description": "ID of device on which stake registers on",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "stake": {
+                                        "description": "Stake amount",
+                                        "type": "number",
+                                        "example": 400
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket resolved"
+                    }
+                }
+            }
+        },
+        "/api/stakes/config": {
+            "put": {
+                "tags": [
+                    "Stake limit"
+                ],
+                "summary": "Updates global stake limit configuration file.",
+                "operationId": "App\\Http\\Controllers\\StakesController::configureStakeLimit",
+                "requestBody": {
+                    "description": "Request object to update stake limit configuration",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "timeDuration",
+                                    "stakeLimit",
+                                    "hotPercentage",
+                                    "restrictionExpires"
+                                ],
+                                "properties": {
+                                    "timeDuration": {
+                                        "description": "Time duration for what config is valid in seconds.",
+                                        "type": "number",
+                                        "example": 300
+                                    },
+                                    "stakeLimit": {
+                                        "description": "Amount after which device is BLOCKED",
+                                        "type": "number",
+                                        "example": 1000
+                                    },
+                                    "hotPercentage": {
+                                        "description": "Percentage of stakeLimit for which device declares as HOT",
+                                        "type": "number",
+                                        "example": 50
+                                    },
+                                    "restrictionExpires": {
+                                        "description": "Time period of expiration of blockade on device in seconds",
+                                        "type": "number",
+                                        "example": 120
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stake limit updated"
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
