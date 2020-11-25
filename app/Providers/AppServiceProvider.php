@@ -23,7 +23,9 @@ class AppServiceProvider extends ServiceProvider
     {
         //bind singletons
         $this->app->singleton(StakeLimit::class, function(){
-            return StakeLimit::make(storage_path('app/stake-limit.config.json'));
+            if(!file_exists(storage_path('app/stake-limit')))
+                mkdir(storage_path('app/stake-limit'));
+            return StakeLimit::make(storage_path('app/stake-limit/config.json'));
         });
 
         // register repositories
