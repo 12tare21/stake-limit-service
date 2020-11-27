@@ -13,8 +13,8 @@ use App\Services\Utills\StakeLimit;
 
 class StakeLimitService implements IStakeLimitService{
     public function __construct(
-        Tickets $tickets,
-        StakeLimit $config
+        StakeLimit $config,
+        Tickets $tickets
     ){
         $this->tickets = $tickets;
         $this->config = $config;
@@ -78,7 +78,12 @@ class StakeLimitService implements IStakeLimitService{
         && $stakeSum > $blockValue;
     }
     
+<<<<<<< HEAD
     private function resolveDeviceStatus($stakeSum, $deviceId){
+=======
+    public function resolveDeviceStatus($stakeSum, $deviceId){
+        $now = \Carbon\Carbon::now();
+>>>>>>> feat(unit tests): temp commit, resolve device test added
         $stakeLimit = $this->config->all();
         if(!$stakeLimit){
             return DeviceStatus::OK;

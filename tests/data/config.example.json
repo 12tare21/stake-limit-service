@@ -1,0 +1,14 @@
+{
+    "withExpiry":{
+        "timeDuration": 300,
+        "stakeLimit": 200,
+        "hotPercentage": 80,
+        "restrictionExpires": 60
+    },
+    "withoutExpiry":{
+        "timeDuration": 300,
+        "stakeLimit": 300,
+        "hotPercentage": 60,
+        "restrictionExpires": 0
+    }
+}
