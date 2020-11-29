@@ -11,4 +11,5 @@ interface Repository{
     function delete($id);
     function findOrCreate($id, array $data = []);
     function sumByAttribute($propName, $attr, $value);
+    function sumByFilters($filters, $propName);
 }

@@ -22,9 +22,18 @@ class StakeLimitService implements IStakeLimitService{
 
     public function recieveTicketMessage(RecieveTicketRequest $request){
         $requestData = $request->validated();
-        $stakeSum = $this->tickets->sumByAttribute('stake', 'deviceId', $requestData['deviceId']);
-        $status = $this->resolveDeviceStatus($stakeSum, $requestData['deviceId']);
+        $timeDuration = $this->config->get('timeDuration');
+        $sumFilters = [
+            ['deviceId', $requestData['deviceId']]
+        ];
+        if($timeDuration){
+            $sumFilters[] = [
+                'created_at' , '>', \Carbon\Carbon::now(config('app.timezone'))->addSeconds(-$timeDuration)
+            ];
+        }
+        $stakeSum = $this->stakeSumByDevice($requestData['deviceId']);
         
+        $status = $this->resolveDeviceStatus($stakeSum, $requestData['deviceId']);
         if($status !== DeviceStatus::BLOCKED){
             $ticketDto = new TicketDto();
             $ticketDto->setId($requestData['id'])
@@ -34,7 +43,7 @@ class StakeLimitService implements IStakeLimitService{
             $stakeSum += $requestData['stake'];
             $this->tickets->create($ticketDto->toArray());
         }
-    
+        
         return $this->resolveDeviceStatus($stakeSum, $requestData['deviceId']);
     }
 
@@ -42,38 +51,68 @@ class StakeLimitService implements IStakeLimitService{
         $requestData = $request->validated();
         
         $stakeLimitDto = new StakeLimitDto();
-        $stakeLimitDto->setValidToInSeconds($requestData['timeDuration'])
+        $stakeLimitDto->setTimeDurationInSeconds($requestData['timeDuration'])
             ->setExpiresForInSeconds($requestData['restrictionExpires'])
             ->setBlockValue($requestData['stakeLimit'])
             ->setHotValueFromLimit($requestData['stakeLimit'], $requestData['hotPercentage']);
 
-        $this->config->flush();
-        $this->config->put($stakeLimitDto->toArray());
-        return $this->config->all();    
+        return $this->config->flushConfigAndExpired()
+            ->put($stakeLimitDto->toArray())
+            ->stakeLimitConf();    
+    }
+
+    private function isDeviceBlocked($stakeSum, $deviceId){
+        $stakeLimit = $this->config->all();
+        if (!$stakeLimit)
+            return false;
+
+        $now = \Carbon\Carbon::now(config('app.timezone'))->getTimestamp();
+        $blockValue = $stakeLimit['blockValue'];
+        $expiresFor = $stakeLimit['expiresFor'];
+
+        $deviceExpiry = isset($stakeLimit[$deviceId])
+            ? \Carbon\Carbon::createFromTimeString($stakeLimit[$deviceId])->addSeconds($expiresFor)
+            : null;
+
+        return (!$deviceExpiry || $now < strtotime($deviceExpiry) || !$expiresFor) 
+        && $stakeSum > $blockValue;
     }
     
     private function resolveDeviceStatus($stakeSum, $deviceId){
-        $now = \Carbon\Carbon::now();
         $stakeLimit = $this->config->all();
-        $device = isset($stakeLimit[$deviceId]) ? $stakeLimit[$deviceId] : null;
-        
-        if(is_null($stakeLimit) || $now->getTimestamp() > strtotime($stakeLimit['validTo']))
+        if(!$stakeLimit){
             return DeviceStatus::OK;
+        }
 
-        if(
-            (!$device || $now->getTimestamp() < strtotime($device) || $stakeLimit['expiresFor'] === 0) 
-            && $stakeSum > $stakeLimit['blockValue']
-        ){
-            if(!$device){
+        $deviceExpiry = $stakeLimit[$deviceId] ?? null;
+        if($this->isDeviceBlocked($stakeSum, $deviceId)){
+            if(!$deviceExpiry || !$stakeLimit['expiresFor']){
                 $this->config->put([
-                    $deviceId => $now->addSeconds($stakeLimit['expiresFor'])
+                    $deviceId => ($stakeLimit['expiresFor']
+                        ? \Carbon\Carbon::now(config('app.timezone'))
+                        : null)
                 ]);
             }
             return DeviceStatus::BLOCKED;
-        } else if ($stakeSum > $stakeLimit['hotValue']){
+        }
+
+        if ($stakeSum > $stakeLimit['hotValue']){
             return DeviceStatus::HOT;
         }
 
         return DeviceStatus::OK;
+    }
+
+    public function stakeSumByDevice($deviceId){
+        $sumFilters = [
+            ['deviceId', $deviceId]
+        ];
+        $timeDuration = $this->config->get('timeDuration');
+        if($timeDuration){
+            $sumFilters[] = [
+                'created_at' , '>', \Carbon\Carbon::now(config('app.timezone'))->addSeconds(-$timeDuration)
+            ];
+        }
+        return $this->tickets->sumByFilters($sumFilters, 'stake');
     }
 }
