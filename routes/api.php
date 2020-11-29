@@ -13,7 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => 'stakes'], function (){
+Route::group(['prefix' => 'secure'], function (){
     Route::post('/tickets', 'StakesController@recieveTicketMessage');
     Route::put('/config', 'StakesController@configureStakeLimit');
+});
+
+Route::group(['prefix' => 'open'], function (){
+    Route::post('/tickets', 'OpenStakesController@recieveTicketMessage');
+    Route::put('/config', 'OpenStakesController@configureStakeLimit');
 });
