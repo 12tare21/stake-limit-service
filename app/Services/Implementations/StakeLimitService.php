@@ -70,8 +70,6 @@ class StakeLimitService implements IStakeLimitService{
             : null;
 
         return $deviceExpiry && (!$expiresFor || $now < strtotime($deviceExpiry));
-        return (!$deviceExpiry || $now < strtotime($deviceExpiry) || !$expiresFor) 
-        && $stakeSum > $blockValue;
     }
 
     public function resolveDeviceStatus($stakeSum, $deviceId, $considerExpiration){
