@@ -2,6 +2,7 @@
 
 namespace App\Services\Utills;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ValidatorExtender{
@@ -20,5 +21,13 @@ class ValidatorExtender{
             
             return true;
         });
+    }
+
+    public static function validatedIfNeeded(Request $request){
+        try{
+            return $request->validated();
+        } catch (\BadMethodCallException $e){
+            return $request->all();
+        }
     }
 }

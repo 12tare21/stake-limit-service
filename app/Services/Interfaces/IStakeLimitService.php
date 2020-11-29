@@ -2,10 +2,9 @@
 
 namespace App\Services\Interfaces;
 
-use App\Http\Requests\ConfigureStakeLimitRequest;
-use App\Http\Requests\RecieveTicketRequest;
+use Illuminate\Http\Request;
 
 interface IStakeLimitService{
-    function recieveTicketMessage(RecieveTicketRequest $request);
-    function configureStakeLimit(ConfigureStakeLimitRequest $request);
+    function recieveTicketMessage(Request $request);
+    function configureStakeLimit(Request $request);
 }

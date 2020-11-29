@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ConfigureStakeLimitRequest;
-use App\Http\Requests\RecieveTicketRequest;
 use App\Services\Interfaces\IStakeLimitService;
+use Illuminate\Http\Request;
 
-class StakesController extends Controller
+class OpenStakesController extends Controller
 {
     public function __construct(IStakeLimitService $stakeLimitService)
     {
@@ -15,7 +14,7 @@ class StakesController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/api/secure/tickets",
+     *   path="/api/open/tickets",
      *   tags={"Ticket message"},
      *   summary="Create ticket and resolve device status",
      *   @OA\RequestBody(
@@ -34,13 +33,13 @@ class StakesController extends Controller
      *   )
      * )
     */
-    public function recieveTicketMessage(RecieveTicketRequest $request){
+    public function recieveTicketMessage(Request $request){
         return response()->json(['status' => $this->stakeLimitService->recieveTicketMessage($request)], 200);
     }
 
     /**
      * @OA\Put(
-     *   path="/api/secure/config",
+     *   path="/api/open/config",
      *   tags={"Stake limit"},
      *   summary="Updates global stake limit configuration file.",
      *   @OA\RequestBody(
@@ -60,7 +59,7 @@ class StakesController extends Controller
      *   )
      * )
     */
-    public function configureStakeLimit(ConfigureStakeLimitRequest $request){
+    public function configureStakeLimit(Request $request){
         return response()->json(['response' => $this->stakeLimitService->configureStakeLimit($request)], 200);
     }
 }

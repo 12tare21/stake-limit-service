@@ -2,38 +2,29 @@
 
 namespace App\Services\Implementations;
 
-use App\Http\Requests\ConfigureStakeLimitRequest;
-use App\Http\Requests\RecieveTicketRequest;
 use App\Infrastructure\DTO\StakeLimitDto;
 use App\Infrastructure\DTO\TicketDto;
 use App\Infrastructure\Enums\DeviceStatus;
 use App\Services\Interfaces\IStakeLimitService;
 use App\Infrastructure\Repositories\Interfaces\Tickets;
 use App\Services\Utills\StakeLimit;
+use App\Services\Utills\ValidatorExtender;
+use Illuminate\Http\Request;
 
 class StakeLimitService implements IStakeLimitService{
     public function __construct(
-        Tickets $tickets,
-        StakeLimit $config
+        StakeLimit $config,
+        Tickets $tickets
     ){
         $this->tickets = $tickets;
         $this->config = $config;
     }
 
-    public function recieveTicketMessage(RecieveTicketRequest $request){
-        $requestData = $request->validated();
-        $timeDuration = $this->config->get('timeDuration');
-        $sumFilters = [
-            ['deviceId', $requestData['deviceId']]
-        ];
-        if($timeDuration){
-            $sumFilters[] = [
-                'created_at' , '>', \Carbon\Carbon::now(config('app.timezone'))->addSeconds(-$timeDuration)
-            ];
-        }
+    public function recieveTicketMessage(Request $request){
+        $requestData = ValidatorExtender::validatedIfNeeded($request);
         $stakeSum = $this->stakeSumByDevice($requestData['deviceId']);
-        
-        $status = $this->resolveDeviceStatus($stakeSum, $requestData['deviceId']);
+        $status = $this->resolveDeviceStatus($stakeSum, $requestData['deviceId'], true);
+
         if($status !== DeviceStatus::BLOCKED){
             $ticketDto = new TicketDto();
             $ticketDto->setId($requestData['id'])
@@ -42,15 +33,16 @@ class StakeLimitService implements IStakeLimitService{
 
             $stakeSum += $requestData['stake'];
             $this->tickets->create($ticketDto->toArray());
+            return $this->resolveDeviceStatus($stakeSum, $requestData['deviceId'], false);
         }
-        
-        return $this->resolveDeviceStatus($stakeSum, $requestData['deviceId']);
+
+        return $status;
     }
 
-    public function configureStakeLimit(ConfigureStakeLimitRequest $request){
-        $requestData = $request->validated();
-        
-        $stakeLimitDto = new StakeLimitDto();
+    public function configureStakeLimit(Request $request){
+        $requestData = ValidatorExtender::validatedIfNeeded($request);
+
+        $stakeLimitDto = new StakeLimitDto(); 
         $stakeLimitDto->setTimeDurationInSeconds($requestData['timeDuration'])
             ->setExpiresForInSeconds($requestData['restrictionExpires'])
             ->setBlockValue($requestData['stakeLimit'])
@@ -61,7 +53,7 @@ class StakeLimitService implements IStakeLimitService{
             ->stakeLimitConf();    
     }
 
-    private function isDeviceBlocked($stakeSum, $deviceId){
+    public function deviceBlocked($stakeSum, $deviceId, $considerExpiration){
         $stakeLimit = $this->config->all();
         if (!$stakeLimit)
             return false;
@@ -70,27 +62,28 @@ class StakeLimitService implements IStakeLimitService{
         $blockValue = $stakeLimit['blockValue'];
         $expiresFor = $stakeLimit['expiresFor'];
 
+        if(!$considerExpiration)
+            return $stakeSum > $blockValue;
+
         $deviceExpiry = isset($stakeLimit[$deviceId])
             ? \Carbon\Carbon::createFromTimeString($stakeLimit[$deviceId])->addSeconds($expiresFor)
             : null;
 
+        return $deviceExpiry && (!$expiresFor || $now < strtotime($deviceExpiry));
         return (!$deviceExpiry || $now < strtotime($deviceExpiry) || !$expiresFor) 
         && $stakeSum > $blockValue;
     }
-    
-    private function resolveDeviceStatus($stakeSum, $deviceId){
+
+    public function resolveDeviceStatus($stakeSum, $deviceId, $considerExpiration){
         $stakeLimit = $this->config->all();
         if(!$stakeLimit){
             return DeviceStatus::OK;
         }
 
-        $deviceExpiry = $stakeLimit[$deviceId] ?? null;
-        if($this->isDeviceBlocked($stakeSum, $deviceId)){
-            if(!$deviceExpiry || !$stakeLimit['expiresFor']){
+        if($this->deviceBlocked($stakeSum, $deviceId, $considerExpiration)){
+            if(!$considerExpiration){
                 $this->config->put([
-                    $deviceId => ($stakeLimit['expiresFor']
-                        ? \Carbon\Carbon::now(config('app.timezone'))
-                        : null)
+                    $deviceId => \Carbon\Carbon::now(config('app.timezone'))
                 ]);
             }
             return DeviceStatus::BLOCKED;
