@@ -3,7 +3,7 @@
 namespace App\Infrastructure\DTO;
 
 class StakeLimitDto implements Dto{
-    private $validTo;
+    private $timeDuration;
     private $blockValue;
     private $hotValue;
     private $expiresFor;
@@ -13,13 +13,8 @@ class StakeLimitDto implements Dto{
         return $this;
     }
 
-    public function setValidToInSeconds(int $duration): StakeLimitDto{
-        $this->validTo = \Carbon\Carbon::now()->addSeconds($duration);
-        return $this;
-    }
-
-    public function setValidTo(\Carbon\Carbon $validTo): StakeLimitDto{
-        $this->validTo = $validTo;
+    public function setTimeDurationInSeconds(int $duration): StakeLimitDto{
+        $this->timeDuration = $duration;
         return $this;
     }
 
@@ -44,13 +39,13 @@ class StakeLimitDto implements Dto{
     }
 
     public function setExpiresAt(int $expiresFor): StakeLimitDto{
-        $this->expiresAt = \Carbon\Carbon::now()->addSeconds($expiresFor);
+        $this->expiresAt = \Carbon\Carbon::now(config('app.timezone'))->addSeconds($expiresFor);
         return $this;
     }
 
     public function toArray(){
         return [
-            'validTo' => $this->validTo,
+            'timeDuration' => $this->timeDuration,
             'blockValue' => $this->blockValue,
             'hotValue' => $this->hotValue,
             'expiresFor' => $this->expiresFor,

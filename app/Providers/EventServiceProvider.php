@@ -17,9 +17,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        DeviceBlockedEvent::class => [
-            DeviceBlockedHandler::class,
-        ],
     ];
 
     /**

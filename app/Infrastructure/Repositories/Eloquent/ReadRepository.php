@@ -31,4 +31,9 @@ class ReadRepository{
     {
         return $this->model->where($attr, $value)->sum($propName);
     }
+
+    public function sumByFilters($filters, $propName)
+    {
+        return $this->model->where($filters)->sum($propName);
+    }
 }

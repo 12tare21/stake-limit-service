@@ -57,5 +57,10 @@ class TicketQuery implements Tickets{
     {
         return $this->ticketDB->where($attr, $value)->sum($propName);
     }
+
+    public function sumByFilters($filters, $propName)
+    {
+        return $this->ticketDB->where($filters)->sum($propName);
+    }
 }
     
