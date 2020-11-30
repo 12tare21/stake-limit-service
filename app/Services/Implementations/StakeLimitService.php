@@ -57,13 +57,12 @@ class StakeLimitService implements IStakeLimitService{
         $stakeLimit = $this->config->all();
         if (!$stakeLimit)
             return false;
-
         $now = \Carbon\Carbon::now(config('app.timezone'))->getTimestamp();
         $blockValue = $stakeLimit['blockValue'];
         $expiresFor = $stakeLimit['expiresFor'];
 
         if(!$considerExpiration)
-            return $stakeSum > $blockValue;
+            return $stakeSum >= $blockValue;
 
         $deviceExpiry = isset($stakeLimit[$deviceId])
             ? \Carbon\Carbon::createFromTimeString($stakeLimit[$deviceId])->addSeconds($expiresFor)
@@ -87,7 +86,7 @@ class StakeLimitService implements IStakeLimitService{
             return DeviceStatus::BLOCKED;
         }
 
-        if ($stakeSum > $stakeLimit['hotValue']){
+        if ($stakeSum >= $stakeLimit['hotValue']){
             return DeviceStatus::HOT;
         }
 

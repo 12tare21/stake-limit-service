@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
             return StakeLimit::make(storage_path('app/stake-limit/config.json'));
         });
-
+        
         // register repositories
         $this->app->bind(Repository::class, MutableRepository::class);
         $this->app->bind(Tickets::class, TicketRepository::class);
