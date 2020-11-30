@@ -1,14 +1,38 @@
 {
-    "withExpiry":{
+    "withExpiry1000For60":{
         "timeDuration": 300,
-        "stakeLimit": 200,
-        "hotPercentage": 80,
-        "restrictionExpires": 60
+        "blockValue": 1000,
+        "hotValue": 600,
+        "expiresFor": 60
     },
-    "withoutExpiry":{
+    "withoutExpiry1000":{
         "timeDuration": 300,
-        "stakeLimit": 300,
-        "hotPercentage": 60,
-        "restrictionExpires": 0
+        "blockValue": 1000,
+        "hotValue": 600,
+        "expiresFor": 0
+    },
+    "negativeLimit":{
+        "timeDuration": 300,
+        "blockValue": -1,
+        "hotValue": 600,
+        "expiresFor": 0
+    },
+    "expiresFor1Sec1000":{
+        "timeDuration": 300,
+        "blockValue": 1000,
+        "hotValue": 600,
+        "expiresFor": 1
+    },
+    "expires1hot600":{
+        "timeDuration": 300,
+        "blockValue": 1000,
+        "hotValue": 600,
+        "expiresFor": 1
+    },
+    "duration300":{
+        "timeDuration": 300,
+        "blockValue": 1000,
+        "hotValue": 600,
+        "expiresFor": 1
     }
 }

@@ -3,6 +3,7 @@
 /public/storage
 /storage/*.key
 /vendor
+/tests/data/test-config.json
 .env
 .env.backup
 .phpunit.result.cache

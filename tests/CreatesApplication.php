@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Services\Utills\StakeLimit;
 use Illuminate\Contracts\Console\Kernel;
 
 trait CreatesApplication
@@ -17,6 +18,15 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        $app->bind(IStakeLimitService::class, StakeLimitService::class);
+        $app->bind(Tickets::class, TicketRepository::class);
+        $app->singleton(StakeLimit::class, function(){
+            if(!file_exists('tests/data')){
+                mkdir('tests/data');
+            }
+            return StakeLimit::make('tests/data/test-config.json');
+        });
+        
         return $app;
     }
 }
