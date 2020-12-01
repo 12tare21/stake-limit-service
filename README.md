@@ -1,61 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## About project
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Stake limit service processes ticket messages for devices according to stake limit configuration by which devices are declared as OK, HOT, BLOCK(don't accept tickets anymore). Rules of stake limit being applied are stake limit - limit acceptance of stakes, time duration - period in which tickets stake sum is counted on device, time period after which device unblocks and hot percentage (value) at which device is declared as HOT.
 
-## About Laravel
+- Simple to use
+- Open and secure controllers(in case that validation moves from Terminal Device in future)
+- Services and Repositories
+- Eloquent and Query builder
+- In-memory stake config store
+- Postgresql database
+- Unit tested
+- Custom validation rules
+- Custom in-memory valuestore methods
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Install && use
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+the following steps show how to install the service
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Pull project
+- Copy ```.env.example``` to ```.env``` and configure
+- Run ```composer i``` to install dependencies
+- Run ```@php artisan key::generate``` to install key
+- Set up database and fill up ```.env``` config
+- Run ```@php artisan migrate``` to run database migrations
+- Run ```@php artisan serve``` to launch app
 
-## Learning Laravel
+The additional commands to use the service
+- Run ```@php artisan test``` to run unit tests
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Endpoints
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The application has four endpoints and swagger docs endpoint:
 
-## Laravel Sponsors
+    - {API_HOST}/api/open/tickets  POST  ->  'status': {{status}}
+    - {API_HOST}/api/open/config  PUT  ->  'response': {...}
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+    - {API_HOST}/api/secure/tickets  POST  ->  'status': {{status}}
+    - {API_HOST}/api/secure/config  PUT  ->  'response': {...}
 
-### Premium Partners
+    - {API_HOST}/api/v1/docs  GET -> Swagger docs
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+Open and secure endpoints serve the same purpose except secure endpoints apply validation rules that were noticed from context of task requirements, while open endpoints don't apply any rule.
 
-## Contributing
+Description of tickets and config endpoints
+- /tickets  POST -> accepts ticket messages, process them according to stake limit configuration and returns status of device on which ticket refers.
+- /config  PUT -> accepts stake limit, stores it in storage as json to be used as configuration for accepting tickets.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Project sketch
+Basicly mapping only dirs edited by me and explainin some of them to code reviewers to be more readable and accessible.
 
-## Code of Conduct
+- app
+  - Http
+    - Controllers (open/secured controller with/without validation)
+    - Requests (defined validation for requests)
+  - Infrastructure
+    - DTO 
+    - Enum
+    - Models (Defined Ticket model)
+    - Repositories
+      - Eloquent (use eloquent and return Model based instances)
+      - Interfaces 
+      - Queries (use query-builder and reutrns raw std class instances)
+    - traits
+  - Providers 
+  - Services
+    - Interfaces
+    - Implementations (Stake limit service)
+    - Utills (helper services like ValidatorExtender and StakeLimit)
+- config
+- database
+  - factories (defined Ticket factory used in testing to generate instances)
+  - migrations 
+- resources > lang > en (localization) 
+- routes (api.php)
+- storage
+  - app
+    - stake-limit (dir where stake limit config.json is stored)  
+- tests
+  - data 
+  - Unit
+    
+## Swagger (OpenAPI 3)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+An important part for developers is the rest api testing and playground. Stake limit service uses swagger to generate html for backend users to test it.
 
-## Security Vulnerabilities
+The application uses a package to generate the page [https://github.com/DarkaOnLine/L5-Swagger]
+The package is a wrapper for the php swagger implementation created for laravel.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The html is generated using the php command ```@php artisan l5-swagger:generate``` or by setting the env variable ```L5_SWAGGER_GENERATE_ALWAYS ``` to true. In order to access the api run the command (not needed if env variable is set to true) and run the application. Once the application starts you can access the api with the following link : http://{API_HOST}/api/v1/docs 
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+An alternative to swagger is postman. 
