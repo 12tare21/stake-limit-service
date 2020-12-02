@@ -11,6 +11,7 @@ Stake limit service processes ticket messages for devices according to stake lim
 - Unit tested
 - Custom validation rules
 - Custom in-memory valuestore methods
+- Dockerized app
 
 ## Install && use
 
@@ -18,11 +19,20 @@ the following steps show how to install the service
 
 - Pull project
 - Copy ```.env.example``` to ```.env``` and configure
+- [Optional] Build and run using docker-compose
 - Run ```composer i``` to install dependencies
 - Run ```@php artisan key::generate``` to install key
 - Set up database and fill up ```.env``` config
 - Run ```@php artisan migrate``` to run database migrations
 - Run ```@php artisan serve``` to launch app
+
+following steps for creating db in docker:
+- ```docker exec -it postgres psql -U postgres```
+- ```CREATE ROLE nsoft WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'pass';```
+- ```CREATE DATABASE "stake-limit-service";```
+
+to run any command with artisan or composer use prefix command:
+- ```docker-compose exec php```
 
 The additional commands to use the service
 - Run ```@php artisan test``` to run unit tests
@@ -86,6 +96,6 @@ An important part for developers is the rest api testing and playground. Stake l
 The application uses a package to generate the page [https://github.com/DarkaOnLine/L5-Swagger]
 The package is a wrapper for the php swagger implementation created for laravel.
 
-The html is generated using the php command ```@php artisan l5-swagger:generate``` or by setting the env variable ```L5_SWAGGER_GENERATE_ALWAYS ``` to true. In order to access the api run the command (not needed if env variable is set to true) and run the application. Once the application starts you can access the api with the following link : http://{API_HOST}/api/v1/docs 
+The html is generated using the php command ```@php artisan l5-swagger:generate``` or by setting the env variable ```L5_SWAGGER_GENERATE_ALWAYS ``` to true. In order to access the api run the command (not needed if env variable is set to true) and run the application. Once the application starts you can access the api with the following link : http://{API_HOST}/api/docs 
 
 An alternative to swagger is postman. 
