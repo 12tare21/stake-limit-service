@@ -19,10 +19,10 @@ the following steps show how to install the service
 
 - Pull project
 - Copy ```.env.example``` to ```.env``` and configure
+- Set up database and fill up ```.env``` config
 - Setup docker with ```@docker-compose build && docker-compose up -d```
 - Run ```composer i``` to install dependencies
 - Run ```@php artisan key::generate``` to install key
-- Set up database and fill up ```.env``` config
 - Run ```@php artisan migrate``` to run database migrations
 - Run ```@php artisan serve``` to launch app
 
