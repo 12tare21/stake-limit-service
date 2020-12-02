@@ -4,7 +4,7 @@ namespace App\Services\Implementations;
 
 use App\Infrastructure\DTO\StakeLimitDto;
 use App\Infrastructure\DTO\TicketDto;
-use App\Infrastructure\Enums\DeviceStatus;
+use App\Infrastructure\Enum\DeviceStatus;
 use App\Services\Interfaces\IStakeLimitService;
 use App\Infrastructure\Repositories\Interfaces\Tickets;
 use App\Services\Utills\StakeLimit;
