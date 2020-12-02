@@ -19,7 +19,7 @@ the following steps show how to install the service
 
 - Pull project
 - Copy ```.env.example``` to ```.env``` and configure
-- [Optional] Build and run using docker-compose
+- Setup docker with ```@docker-compose build && docker-compose up -d```
 - Run ```composer i``` to install dependencies
 - Run ```@php artisan key::generate``` to install key
 - Set up database and fill up ```.env``` config
@@ -31,8 +31,10 @@ following steps for creating db in docker:
 - ```CREATE ROLE nsoft WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'pass';```
 - ```CREATE DATABASE "stake-limit-service";```
 
-to run any command with artisan or composer use prefix command:
+NOTE: to run any command with artisan or composer in laravel use prefix command:
 - ```docker-compose exec php```
+
+NOTE: If you have any permission errors use chmod and chown to add permissions and ownership on project root dir recursively
 
 The additional commands to use the service
 - Run ```@php artisan test``` to run unit tests
