@@ -19,11 +19,11 @@ services:
       - laravel
   
   pgsql:
-    image: postgres:11.10
+    image: postgres:11-alpine
     container_name: postgres
     tty: true
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     env_file:
