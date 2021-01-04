@@ -1,6 +1,6 @@
 ## About project
 
-Stake limit service processes ticket messages for devices according to stake limit configuration by which devices are declared as OK, HOT, BLOCK(don't accept tickets anymore). Rules of stake limit being applied are stake limit - limit acceptance of stakes, time duration - period in which tickets stake sum is counted on device, time period after which device unblocks and hot percentage (value) at which device is declared as HOT.
+Stake limit service processes ticket messages for devices according to stake limit configuration by which device status is declared as OK, HOT, BLOCKED(don't accept tickets anymore). Rules of stake limit being applied are **stakeLimit** - limit acceptance of stakes, **timeDuration** - period in which tickets stake sum is counted on device, **restrictionExpires** - time period after which device unblocks and **hotPercentage** - value at which device status is declared as HOT.
 
 - Simple to use
 - Open and secure controllers(in case that validation moves from Terminal Device in future)
@@ -22,32 +22,33 @@ the following steps show how to install the service
 - Set up database and fill up ```.env``` config
 - Setup docker with ```@docker-compose build && docker-compose up -d```
 - Run ```composer i``` to install dependencies
-- Run ```@php artisan key::generate``` to install key
+- Run ```@php artisan key::generate``` to generate app key
 - Run ```@php artisan migrate``` to run database migrations
-- Run ```@php artisan serve``` to launch app
+- Run ```@php artisan serve``` to launch app on PHP development server or run it with docker containers
 
-following steps for creating db in docker:
+The additional commands to use the service
+- Run ```@php artisan test``` to run unit tests
+
+following steps for creating db:
 - ```docker exec -it postgres psql -U postgres```
-- ```CREATE ROLE nsoft WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'pass';```
+- ```CREATE ROLE user123 WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'pass';```
 - ```CREATE DATABASE "stake-limit-service";```
 
-NOTE: to run any command with artisan or composer in laravel use prefix command:
+NOTE: to run any command in docker with artisan or composer in laravel use prefix command:
 - ```docker-compose exec php```
 
 NOTE: If you have any permission errors use chmod and chown to add permissions and ownership on project root dir recursively
 
-The additional commands to use the service
-- Run ```@php artisan test``` to run unit tests
 
 ## Endpoints
 
 The application has four endpoints and swagger docs endpoint:
 
-    - {API_HOST}/api/open/tickets  POST  ->  'status': {{status}}
-    - {API_HOST}/api/open/config  PUT  ->  'response': {...}
-
-    - {API_HOST}/api/secure/tickets  POST  ->  'status': {{status}}
-    - {API_HOST}/api/secure/config  PUT  ->  'response': {...}
+    - {API_HOST}/api/open/tickets  POST  ->  'status': {{status}} // status: OK || HOT || BLOCKED
+    - {API_HOST}/api/open/config  PUT  ->  'response': {...} // timeDuration: 200 && stakeLimit: 3000 && hotValue: 2300 && restrictionExpires: 60
+   
+    - {API_HOST}/api/secure/tickets  POST  ->  'status': {{status}} // status: OK || HOT || BLOCKED
+    - {API_HOST}/api/secure/config  PUT  ->  'response': {...} // timeDuration: 200 && stakeLimit: 3000 && hotValue: 2300 && restrictionExpires: 60
 
     - {API_HOST}/api/v1/docs  GET -> Swagger docs
 
